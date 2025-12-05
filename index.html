@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Practice-La Pets</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="top-bar">
+      <h1>Practice-La Pets</h1>
+      <div class="coins-display">
+        🪙 Coins: <span id="coinsDisplay">0</span>
+      </div>
+    </header>
+
+    <!-- SCREEN: CHARACTER SELECT -->
+    <section id="screenSelect" class="screen active">
+      <h2>Choose your companion</h2>
+      <p class="subtitle">You can only have one pet for now, but you can change later.</p>
+
+      <div class="pet-grid">
+        <div class="pet-card" onclick="selectPet('cat')">
+          <div class="pet-avatar">🐱</div>
+          <h3>Cat</h3>
+          <p>Calm and clever. Loves consistent streaks.</p>
+        </div>
+
+        <div class="pet-card" onclick="selectPet('dog')">
+          <div class="pet-avatar">🐶</div>
+          <h3>Dog</h3>
+          <p>Energetic and loyal. Loves big wins.</p>
+        </div>
+
+        <div class="pet-card" onclick="selectPet('bunny')">
+          <div class="pet-avatar">🐰</div>
+          <h3>Bunny</h3>
+          <p>Fast learner. Grows with every practice.</p>
+        </div>
+      </div>
+
+      <button class="primary-btn" onclick="goToMain()">Continue</button>
+    </section>
+
+    <!-- SCREEN: MAIN PET ROOM -->
+    <section id="screenMain" class="screen">
+      <h2>Your Room</h2>
+
+      <div class="room">
+        <div class="pet-area">
+          <div id="petEmoji" class="pet-emoji">❓</div>
+          <div class="pet-label">
+            <span id="petTypeLabel">No pet selected</span>
+          </div>
+          <div class="pet-items">
+            <span id="equippedHat" class="item-tag"></span>
+            <span id="equippedBed" class="item-tag"></span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button onclick="earnCoins()" class="secondary-btn">
+            Practice (temporary: +10 coins)
+          </button>
+          <button onclick="openShop()" class="primary-btn">
+            Open Shop
+          </button>
+          <button onclick="backToSelect()" class="ghost-btn">
+            Change Pet
+          </button>
+        </div>
+      </div>
+
+      <div class="inventory">
+        <h3>Your Items</h3>
+        <ul id="inventoryList"></ul>
+      </div>
+    </section>
+
+    <!-- SCREEN: SHOP -->
+    <section id="screenShop" class="screen">
+      <h2>Shop</h2>
+      <p class="subtitle">Spend your coins on items for your pet and room.</p>
+
+      <div class="shop-grid" id="shopItems"></div>
+
+      <button class="secondary-btn" onclick="closeShop()">Back to Room</button>
+    </section>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
