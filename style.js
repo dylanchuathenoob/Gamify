@@ -53,6 +53,11 @@ function getPetEmoji(type) {
   if (type === "cat") return "🐱";
   if (type === "dog") return "🐶";
   if (type === "bunny") return "🐰";
+  if (type === "fox") return "🦊";
+  if (type === "panda") return "🐼";
+  if (type === "dino") return "🦕";
+  if (type === "dragon") return "🐉";
+  if (type === "penguin") return "🐧";
   return "❓";
 }
 
@@ -62,8 +67,14 @@ function getPetLabel(type) {
     cat: "Your Cat",
     dog: "Your Dog",
     bunny: "Your Bunny",
+    fox: "Your Fox",
+    panda: "Your Panda",
+    dino: "Your Dino",
+    dragon: "Your Dragon",
+    penguin: "Your Penguin",
   }[type];
 }
+
 
 function updatePetUI() {
   const petEmojiEl = document.getElementById("petEmoji");
