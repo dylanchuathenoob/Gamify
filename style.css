@@ -58,11 +58,12 @@ h2 {
 /* PET SELECT GRID */
 
 .pet-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: nowrap;   /* ❗ prevents wrapping */
   margin-bottom: 1.5rem;
-}
 
 .pet-card {
   background: #f3f4f6;
