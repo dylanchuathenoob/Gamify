@@ -52,25 +52,11 @@ function updateCoinsUI() {
 function getPetLabel(type) {
   if (!type) return "No pet selected";
   return {
-    fox: "Your Fox",
-    panda: "Your Panda",
-    dino: "Your Dino",
-    dragon: "Your Dragon",
-    penguin: "Your Penguin",
-  }[type];
-}
-
-function getPetLabel(type) {
-  if (!type) return "No pet selected";
-  return {
-    cat: "Your Cat",
     dog: "Your Dog",
+    cat: "Your Cat",
+    turtle: "Your Turtle",
     bunny: "Your Bunny",
     fox: "Your Fox",
-    panda: "Your Panda",
-    dino: "Your Dino",
-    dragon: "Your Dragon",
-    penguin: "Your Penguin",
   }[type];
 }
 
