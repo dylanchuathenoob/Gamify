@@ -141,31 +141,22 @@ function renderChests() {
       el.classList.add("locked");
       img.src = "images/chest-closed.png";
     } else if (claimed[i]) {
-      img.src = "images/chest-opened.png"; // match your filename
+      img.src = "images/chest-opened.png";
     } else {
       img.src = "images/chest-closed.png";
     }
   });
-}
 
-
-
-  chestEls.forEach((el, i) => {
-  el.classList.remove("locked", "claimed");
-
-  if (i >= available) {
-    // locked chest
-    el.classList.add("locked");
-    el.textContent = "🔒";
-  } else if (claimed[i]) {
-    // opened chest
-    el.classList.add("claimed");
-    el.textContent = "🪙"; // or "✅" or "🎁"
+  if (available === 0) {
+    chestHint.textContent = "Take the quiz to unlock chests.";
   } else {
-    // available but not opened
-    el.textContent = "🧰";
+    const remaining = countRemainingChests();
+    chestHint.textContent =
+      remaining > 0
+        ? `You have ${remaining} chest(s) to claim. Click them for +1 coin each.`
+        : "All chests claimed. Do the quiz again to unlock more.";
   }
-});
+}
 
 
   if (available === 0) {
@@ -350,21 +341,6 @@ function claimChest(index) {
     renderAll();
   }, 600);
 }
-
-.chest{
-  width: 84px;
-  height: 84px;
-  position: relative;
-}
-
-.chest img{
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-@keyframes chestOpen { ... }
-@keyframes coinPop { ... }
-
 
 // =========================
 // Shop / Seeds / Planting
