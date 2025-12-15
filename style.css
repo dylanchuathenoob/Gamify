@@ -112,58 +112,61 @@ h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
   flex-wrap: wrap;
 }
 
+/* ===== Chest buttons (PNG-based) ===== */
 .chest{
   width: 84px;
   height: 84px;
+  padding: 0;
+  border: none;
+  background: transparent;
   border-radius: 14px;
-
-  background: linear-gradient(
-    to bottom,
-    #9c5a2c,
-    #7a421f
-  );
-  border: 2px solid #5b3a1e;
-
-  box-shadow:
-    inset 0 4px 0 rgba(255,255,255,0.25),
-    0 14px 28px rgba(0,0,0,0.35);
-
   cursor: pointer;
 
-  display: flex;
+  position: relative; /* needed for coinPop positioning */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  transition: transform 0.2s ease;
 }
 
-.chest:nth-child(2){ animation-delay: 0.2s; }
-.chest:nth-child(3){ animation-delay: 0.4s; }
-
-@keyframes floaty {
-  0%,100%{ transform: translateY(0px); }
-  50%{ transform: translateY(-8px); }
+.chest img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  pointer-events: none; /* IMPORTANT: clicks go to the button */
 }
 
-/* 🔒 Locked chest */
 .chest.locked{
-  opacity: 0.35;
+  opacity: 0.4;
   filter: grayscale(1);
   cursor: not-allowed;
 }
 
-/* ✅ Opened chest */
-.chest.claimed{
-  background: linear-gradient(
-    to bottom,
-    #d1a45f,
-    #b88a3c
-  );
-  border-color: #8a6a2f;
-  box-shadow:
-    inset 0 4px 0 rgba(255,255,255,0.35),
-    0 12px 25px rgba(0,0,0,0.4);
+.chest:disabled{
   cursor: not-allowed;
+}
+
+@keyframes chestOpen{
+  0% { transform: scale(1); }
+  40% { transform: scale(1.15); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes coinPop{
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+}
+
+.coinPop{
+  position: absolute;
+  font-size: 24px;
+  left: 50%;
+  top: 25%;
+  transform: translateX(-50%);
+  animation: coinPop 0.8s ease forwards;
+  pointer-events: none;
 }
 
 
