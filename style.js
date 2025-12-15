@@ -301,9 +301,9 @@ function claimChest(index) {
   gameState.coins += 1;
 
   saveState();
-  updateHUD();
-  renderChests();
+  renderAll(); // 🔥 force full UI refresh
 }
+
 
 // =========================
 // Shop / Seeds / Planting
