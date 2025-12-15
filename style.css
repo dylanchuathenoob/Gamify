@@ -1,32 +1,44 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+}
+
 body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color: #111827;
   background: #0b1220;
 }
 
-.topbar{
+/* ===== TOP BAR ===== */
+.topbar {
   position: sticky;
   top: 0;
-
-  z-index: 200;          /* 👈 IMPORTANT: higher than modalBackdrop (50) */
-
+  z-index: 200;
   display: grid;
   grid-template-columns: 1fr auto auto;
   gap: 12px;
   align-items: center;
-
   padding: 14px 16px;
   background: rgba(17,24,39,0.92);
   border-bottom: 1px solid rgba(255,255,255,0.08);
   backdrop-filter: blur(8px);
 }
 
+.brand { 
+  font-weight: 800; 
+  letter-spacing: 0.2px; 
+  color: #f9fafb; 
+}
 
-.brand { font-weight: 800; letter-spacing: 0.2px; color: #f9fafb; }
+.hud { 
+  display: flex; 
+  gap: 10px; 
+  flex-wrap: wrap; 
+  justify-content: center; 
+}
 
-.hud { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.pill{
+.pill {
   padding: 8px 10px;
   border-radius: 999px;
   background: rgba(255,255,255,0.08);
@@ -35,9 +47,14 @@ body {
   font-weight: 600;
 }
 
-.actions{ display:flex; gap:10px; justify-content: flex-end; flex-wrap: wrap; }
+.actions { 
+  display: flex; 
+  gap: 10px; 
+  justify-content: flex-end; 
+  flex-wrap: wrap; 
+}
 
-.btn{
+.btn {
   border: 0;
   border-radius: 12px;
   padding: 10px 12px;
@@ -47,59 +64,70 @@ body {
   color: #111827;
   transition: transform 0.08s ease, opacity 0.08s ease;
 }
+
 .btn:hover { opacity: 0.95; }
 .btn:active { transform: translateY(1px); }
-.btnGhost{
+
+.btnGhost {
   background: rgba(255,255,255,0.08);
   color: #f9fafb;
   border: 1px solid rgba(255,255,255,0.14);
 }
 
-.farm{
+/* ===== FARM AREA ===== */
+.farm {
   min-height: calc(100vh - 70px);
   padding: 22px 16px 40px;
-
   background-image: url("images/barn.png");
   background-size: cover;
   background-position: center 70%;
   background-repeat: no-repeat;
-
   position: relative;
-}
-
-.farm{
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
 
-.farm::before{
+.farm::before {
   content: "";
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.45);
   z-index: 0;
-  pointer-events: none; /* 👈 THIS LINE FIXES CHESTS */
+  pointer-events: none; /* Allows clicks through */
 }
 
-
-.farmOverlay{
+.farmOverlay {
+  position: relative;
+  z-index: 1;
   max-width: 980px;
   margin: 0 auto;
   padding: 18px;
   border-radius: 20px;
-
-  background: rgba(255,255,255,0.22); /* 👈 clearer */
+  background: rgba(255,255,255,0.22);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-
   border: 1px solid rgba(0,0,0,0.35);
   box-shadow: 0 20px 60px rgba(0,0,0,0.45);
 }
 
-.titleBlock h1 { color: #f9fafb; font-size: 28px; }
-.titleBlock p { color: rgba(249,250,251,0.85); margin-top: 6px; }
+.farmOverlay,
+.farmOverlay * {
+  color: #fff;
+}
 
-.chestsArea, .plotsArea{
+.titleBlock h1 { 
+  color: #f9fafb; 
+  font-size: 28px; 
+}
+
+.titleBlock p { 
+  color: rgba(249,250,251,0.85); 
+  margin-top: 6px; 
+}
+
+/* ===== CHESTS AREA ===== */
+.chestsArea,
+.plotsArea {
   margin-top: 18px;
   padding: 14px;
   border-radius: 16px;
@@ -107,8 +135,13 @@ body {
   border: 1px solid rgba(255,255,255,0.10);
 }
 
-h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
-.chestsRow{
+h2 { 
+  color: #f9fafb; 
+  font-size: 18px; 
+  margin-bottom: 10px; 
+}
+
+.chestsRow {
   display: flex;
   gap: 14px;
   align-items: center;
@@ -116,275 +149,7 @@ h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
   flex-wrap: wrap;
 }
 
-/* ===== Chest buttons (PNG-based) ===== */
-.chest{
-  width: 84px;
-  height: 84px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  position: relative;
-  font-size: 0;      /* prevents weird tiny icon text */
-  line-height: 0;
-}
-
-.chest > img{
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-
-.chest.locked{
-  opacity: 0.4;
-  filter: grayscale(1);
-  cursor: not-allowed;
-}
-
-.chest:disabled{
-  cursor: not-allowed;
-}
-
-@keyframes chestOpen{
-  0% { transform: scale(1); }
-  40% { transform: scale(1.15); }
-  70% { transform: scale(0.95); }
-  100% { transform: scale(1); }
-}
-
-@keyframes coinPop{
-  0% { transform: translateY(0) scale(0.8); opacity: 0; }
-  30% { opacity: 1; }
-  100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
-}
-
-.coinPop{
-  position: absolute;
-  font-size: 24px;
-  left: 50%;
-  top: 25%;
-  transform: translateX(-50%);
-  animation: coinPop 0.8s ease forwards;
-  pointer-events: none;
-}
-
-
-.chestHint, .plotHint{
-  margin-top: 10px;
-  color: rgba(249,250,251,0.8);
-  font-size: 14px;
-}
-
-.plotsGrid{
-  display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 12px;
-}
-@media (max-width: 720px){
-  .plotsGrid{ grid-template-columns: repeat(2, minmax(120px, 1fr)); }
-}
-
-.plot{
-  min-height: 110px;
-  padding: 10px;
-  border-radius: 16px;
-  border: 1px dashed rgba(255,255,255,0.18);
-  background: rgba(17,24,39,0.40);
-  color: #f9fafb;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  transition: transform 0.08s ease, opacity 0.08s ease;
-}
-.plot:hover { opacity: 0.96; }
-.plot:active { transform: translateY(1px); }
-.plot .emoji { font-size: 34px; }
-.plot .name { font-weight: 800; }
-.plot .sub { font-size: 12px; opacity: 0.8; }
-
-.modalBackdrop{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: grid;
-  place-items: center;
-  padding: 18px;
-  z-index: 50;
-}
-.hidden{ display:none; }
-.modalBackdrop.hidden{
-  display: none !important;
-  pointer-events: none !important;
-}
-.modalBackdrop{
-  pointer-events: auto;
-}
-
-.modal{
-  width: min(720px, 100%);
-  border-radius: 18px;
-  background: rgba(17,24,39,0.96);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 30px 70px rgba(0,0,0,0.45);
-  color: #f9fafb;
-  overflow: hidden;
-}
-
-.modalHeader{
-  display:flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.modalBody{ padding: 16px; }
-.modalFooter{
-  padding: 14px 16px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-  display:flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.iconBtn{
-  border: 0;
-  background: rgba(255,255,255,0.08);
-  color: #f9fafb;
-  border-radius: 10px;
-  padding: 8px 10px;
-  cursor: pointer;
-}
-
-.qCard{
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 14px;
-  padding: 12px;
-  margin-bottom: 12px;
-}
-.qTitle{ font-weight: 800; margin-bottom: 8px; }
-.choice{
-  display:flex;
-  gap:10px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  margin: 8px 0;
-  cursor: pointer;
-}
-.choice input{ cursor: pointer; }
-
-.shopCard{
-  display:flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-}
-.shopTitle{ font-weight: 900; font-size: 18px; }
-.shopDesc{ opacity: 0.85; margin-top: 6px; }
-.price{ opacity: 0.9; margin-bottom: 8px; }
-
-.inventory{ margin-top: 16px; }
-.invGrid{
-  margin-top: 10px;
-  display:grid;
-  grid-template-columns: repeat(2, minmax(160px, 1fr));
-  gap: 10px;
-}
-.invItem{
-  padding: 10px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  display:flex;
-  justify-content: space-between;
-}
-
-.farmOverlay{
-  position: relative;
-  z-index: 1;
-}
-
-.farmOverlay, .farmOverlay * {
-  color: #fff;
-}
-
-@keyframes chestOpen {
-  0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.15) rotate(-2deg);
-  }
-  70% {
-    transform: scale(0.95) rotate(2deg);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes coinPop {
-  0% {
-    transform: translateY(0) scale(0.8);
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-40px) scale(1.2);
-    opacity: 0;
-  }
-}
-
-.coinPop {
-  position: absolute;
-  font-size: 24px;
-  animation: coinPop 0.8s ease forwards;
-  pointer-events: none;
-}
-
-/* Allow clicks through the dark farm overlay */
-.farm::before{
-  pointer-events: none;
-}
-
-/* Make sure the top bar is always above everything */
-.top-bar{
-  position: relative;
-  z-index: 9999;
-}
-
-/* Bring plots back */
-.plotsGrid{
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.plot{
-  min-height: 110px;             /* 👈 forces them to exist */
-  border-radius: 14px;
-  border: 1px dashed rgba(255,255,255,0.35);
-  background: rgba(0,0,0,0.25);   /* 👈 visible on glass panel */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-chest{
+.chest {
   width: 84px;
   height: 84px;
   padding: 0;
@@ -396,34 +161,38 @@ chest{
   line-height: 0;
 }
 
-.chest img{
+.chest img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
   display: block;
+  object-fit: contain;
   pointer-events: none;
 }
 
-.chest.locked{
+.chest.locked {
   opacity: 0.4;
   filter: grayscale(1);
   cursor: not-allowed;
 }
 
-@keyframes chestOpen{
+.chest:disabled {
+  cursor: not-allowed;
+}
+
+@keyframes chestOpen {
   0% { transform: scale(1); }
-  40% { transform: scale(1.15); }
-  70% { transform: scale(0.95); }
+  40% { transform: scale(1.15) rotate(-2deg); }
+  70% { transform: scale(0.95) rotate(2deg); }
   100% { transform: scale(1); }
 }
 
-@keyframes coinPop{
+@keyframes coinPop {
   0% { transform: translate(-50%, 0) scale(0.8); opacity: 0; }
   30% { opacity: 1; }
   100% { transform: translate(-50%, -40px) scale(1.2); opacity: 0; }
 }
 
-.coinPop{
+.coinPop {
   position: absolute;
   left: 50%;
   top: 25%;
@@ -432,25 +201,177 @@ chest{
   pointer-events: none;
 }
 
-/* 1) Never let the farm dark overlay block clicks */
-.farm::before{
-  pointer-events: none !important;
+.chestHint,
+.plotHint {
+  margin-top: 10px;
+  color: rgba(249,250,251,0.8);
+  font-size: 14px;
 }
 
-/* 2) Make sure the top bar buttons are always on top */
-.top-bar, .top-nav{
-  position: relative;
-  z-index: 9999;
+/* ===== PLOTS AREA ===== */
+.plotsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 12px;
 }
 
-/* 3) When modals are hidden, they must NOT block clicks */
-.hidden{
+@media (max-width: 720px) {
+  .plotsGrid { 
+    grid-template-columns: repeat(2, minmax(120px, 1fr)); 
+  }
+}
+
+.plot {
+  min-height: 110px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px dashed rgba(255,255,255,0.35);
+  background: rgba(17,24,39,0.40);
+  color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.08s ease, opacity 0.08s ease;
+}
+
+.plot:hover { opacity: 0.96; }
+.plot:active { transform: translateY(1px); }
+.plot .emoji { font-size: 34px; }
+.plot .name { font-weight: 800; }
+.plot .sub { font-size: 12px; opacity: 0.8; }
+
+/* ===== MODALS ===== */
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.hidden {
   display: none !important;
-}
-
-/* If your modals use opacity instead of display, also force this */
-.modal.hidden, #quizModal.hidden, #shopModal.hidden{
   pointer-events: none !important;
 }
 
+.modal {
+  width: min(720px, 100%);
+  border-radius: 18px;
+  background: rgba(17,24,39,0.96);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.45);
+  color: #f9fafb;
+  overflow: hidden;
+}
 
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.modalBody { 
+  padding: 16px; 
+}
+
+.modalFooter {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.iconBtn {
+  border: 0;
+  background: rgba(255,255,255,0.08);
+  color: #f9fafb;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+/* ===== QUIZ CARDS ===== */
+.qCard {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.qTitle { 
+  font-weight: 800; 
+  margin-bottom: 8px; 
+}
+
+.choice {
+  display: flex;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+.choice input { 
+  cursor: pointer; 
+}
+
+/* ===== SHOP CARDS ===== */
+.shopCard {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  margin-bottom: 12px;
+}
+
+.shopTitle { 
+  font-weight: 900; 
+  font-size: 18px; 
+}
+
+.shopDesc { 
+  opacity: 0.85; 
+  margin-top: 6px; 
+}
+
+.price { 
+  opacity: 0.9; 
+  margin-bottom: 8px; 
+}
+
+/* ===== INVENTORY ===== */
+.inventory { 
+  margin-top: 16px; 
+}
+
+.invGrid {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.invItem {
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  display: flex;
+  justify-content: space-between;
+}
