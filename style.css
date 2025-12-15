@@ -55,7 +55,7 @@ body {
   min-height: calc(100vh - 70px);
   padding: 22px 16px 40px;
 
-  background-image: url("barn.png");
+  background-image: url("images/barn.png");
   background-size: cover;
   background-position: center 70%;
   background-repeat: no-repeat;
