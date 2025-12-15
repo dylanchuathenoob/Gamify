@@ -115,15 +115,28 @@ h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
 .chest{
   width: 84px;
   height: 84px;
-  border-radius: 18px;
-  border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.10);
-  font-size: 40px;
+  border-radius: 14px;
+
+  background: linear-gradient(
+    to bottom,
+    #9c5a2c,
+    #7a421f
+  );
+  border: 2px solid #5b3a1e;
+
+  box-shadow:
+    inset 0 4px 0 rgba(255,255,255,0.25),
+    0 14px 28px rgba(0,0,0,0.35);
+
   cursor: pointer;
-  color: #f9fafb;
-  transition: transform 0.18s ease, opacity 0.18s ease;
-  animation: floaty 2.4s ease-in-out infinite;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: transform 0.2s ease;
 }
+
 .chest:nth-child(2){ animation-delay: 0.2s; }
 .chest:nth-child(3){ animation-delay: 0.4s; }
 
@@ -132,18 +145,27 @@ h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
   50%{ transform: translateY(-8px); }
 }
 
+/* 🔒 Locked chest */
 .chest.locked{
-  opacity: 0.22;
+  opacity: 0.35;
   filter: grayscale(1);
   cursor: not-allowed;
-  animation: none;
 }
+
+/* ✅ Opened chest */
 .chest.claimed{
-  opacity: 0.12;
-  filter: grayscale(1);
+  background: linear-gradient(
+    to bottom,
+    #d1a45f,
+    #b88a3c
+  );
+  border-color: #8a6a2f;
+  box-shadow:
+    inset 0 4px 0 rgba(255,255,255,0.35),
+    0 12px 25px rgba(0,0,0,0.4);
   cursor: not-allowed;
-  animation: none;
 }
+
 
 .chestHint, .plotHint{
   margin-top: 10px;
@@ -284,4 +306,40 @@ h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
 
 .farmOverlay, .farmOverlay * {
   color: #fff;
+}
+
+@keyframes chestOpen {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.15) rotate(-2deg);
+  }
+  70% {
+    transform: scale(0.95) rotate(2deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes coinPop {
+  0% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.coinPop {
+  position: absolute;
+  font-size: 24px;
+  animation: coinPop 0.8s ease forwards;
+  pointer-events: none;
 }
