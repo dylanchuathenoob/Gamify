@@ -1,390 +1,354 @@
-// =========================
-// Practice-La Farm (3 Qs)
-// =========================
+// ===== GAME STATE =====
+let gameState = {
+  coins: 0,
+  seeds: 1,
+  lastScore: 0,
+  totalQuestions: 3,
+  chests: [false, false, false], // unlocked state
+  plots: Array(8).fill(null), // 8 plots
+  inventory: {} // {plantName: count}
+};
 
-const STORAGE_KEY = "practiceLaFarm_v1";
-
+// ===== PLANT TYPES =====
 const PLANTS = [
-  { id: "carrot",     name: "Carrot",     emoji: "🥕", pct: 30 },
-  { id: "sunflower",  name: "Sunflower",  emoji: "🌻", pct: 25 },
-  { id: "tomato",     name: "Tomato",     emoji: "🍅", pct: 20 },
-  { id: "strawberry", name: "Strawberry", emoji: "🍓", pct: 20 },
-  { id: "moneyTree",  name: "Money Tree", emoji: "💰🌳", pct: 5  }, // rare
+  { name: "Tomato", emoji: "🍅", value: 3 },
+  { name: "Carrot", emoji: "🥕", value: 2 },
+  { name: "Corn", emoji: "🌽", value: 4 },
+  { name: "Eggplant", emoji: "🍆", value: 3 },
+  { name: "Potato", emoji: "🥔", value: 2 },
+  { name: "Pumpkin", emoji: "🎃", value: 5 }
 ];
 
-// 3 questions total; 1 correct = 1 chest
-const QUIZ = [
+// ===== QUIZ QUESTIONS =====
+const QUESTIONS = [
   {
-    q: "What is 7 + 5?",
+    q: "What is 5 + 7?",
     choices: ["10", "11", "12", "13"],
-    answerIndex: 2
+    correct: 2
   },
   {
-    q: "Which is a prime number?",
-    choices: ["9", "15", "17", "21"],
-    answerIndex: 2
+    q: "What is the capital of France?",
+    choices: ["London", "Berlin", "Paris", "Madrid"],
+    correct: 2
   },
   {
-    q: "What is 3 × 4?",
-    choices: ["7", "10", "12", "14"],
-    answerIndex: 2
+    q: "How many continents are there?",
+    choices: ["5", "6", "7", "8"],
+    correct: 2
+  },
+  {
+    q: "What is 9 × 6?",
+    choices: ["45", "54", "63", "72"],
+    correct: 1
+  },
+  {
+    q: "Which planet is closest to the Sun?",
+    choices: ["Venus", "Mercury", "Mars", "Earth"],
+    correct: 1
+  },
+  {
+    q: "What is 100 - 37?",
+    choices: ["63", "73", "53", "67"],
+    correct: 0
   }
 ];
 
-let gameState = loadState();
-
-// ----- DOM
-const coinsText = document.getElementById("coinsText");
-const seedsText = document.getElementById("seedsText");
-const scoreText = document.getElementById("scoreText");
-
-const btnQuiz = document.getElementById("btnQuiz");
-const btnShop = document.getElementById("btnShop");
-const btnReset = document.getElementById("btnReset");
-
-const quizModal = document.getElementById("quizModal");
-const shopModal = document.getElementById("shopModal");
-const closeQuiz = document.getElementById("closeQuiz");
-const closeShop = document.getElementById("closeShop");
-const closeShopBottom = document.getElementById("closeShopBottom");
-
-const quizBody = document.getElementById("quizBody");
-const submitQuiz = document.getElementById("submitQuiz");
-
-const chestEls = [
-  document.getElementById("chest0"),
-  document.getElementById("chest1"),
-  document.getElementById("chest2"),
-];
-const chestHint = document.getElementById("chestHint");
-
-const plotsGrid = document.getElementById("plotsGrid");
-const invGrid = document.getElementById("invGrid");
-const buySeedBtn = document.getElementById("buySeedBtn");
-
-// ----- init
-renderAll();
-wireEvents();
-
-// =========================
-// State
-// =========================
-function defaultState() {
-  return {
-    coins: 0,
-    seeds: 1,              // first-time user seed
-    lastScore: 0,           // 0-3
-    chestsAvailable: 0,     // 0-3
-    claimedChests: [false, false, false],
-    farmPlots: [null, null, null, null], // 4 plots
-    inventory: {
-      carrot: 0,
-      sunflower: 0,
-      tomato: 0,
-      strawberry: 0,
-      moneyTree: 0
-    }
-  };
+// ===== UTILITY FUNCTIONS =====
+function saveGame() {
+  localStorage.setItem('farmGame', JSON.stringify(gameState));
 }
 
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultState();
-    const parsed = JSON.parse(raw);
-
-    // basic repair in case older keys missing
-    const base = defaultState();
-    return {
-      ...base,
-      ...parsed,
-      inventory: { ...base.inventory, ...(parsed.inventory || {}) },
-      claimedChests: Array.isArray(parsed.claimedChests) ? parsed.claimedChests.slice(0,3) : base.claimedChests,
-      farmPlots: Array.isArray(parsed.farmPlots) ? parsed.farmPlots.slice(0,4) : base.farmPlots
-    };
-  } catch {
-    return defaultState();
+function loadGame() {
+  const saved = localStorage.getItem('farmGame');
+  if (saved) {
+    gameState = JSON.parse(saved);
   }
 }
 
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(gameState));
+function updateUI() {
+  document.getElementById('coinsText').textContent = gameState.coins;
+  document.getElementById('seedsText').textContent = gameState.seeds;
+  document.getElementById('scoreText').textContent = 
+    `${gameState.lastScore}/${gameState.totalQuestions}`;
+  
+  updateChests();
+  updatePlots();
+  updateInventory();
 }
 
-// =========================
-// Rendering
-// =========================
-function renderAll() {
-  updateHUD();
-  renderChests();
-  renderPlots();
-  renderInventory();
-}
-
-function updateHUD() {
-  coinsText.textContent = String(gameState.coins);
-  seedsText.textContent = String(gameState.seeds);
-  scoreText.textContent = `${gameState.lastScore}/3`;
-}
-
-function renderChests() {
-  const available = gameState.chestsAvailable;
-  const claimed = gameState.claimedChests;
-
-  chestEls.forEach((el, i) => {
-    const img = el.querySelector("img");
-    if (!img) return;
-
-    el.classList.remove("locked");
-
-    if (i >= available) {
-      el.classList.add("locked");
-      img.src = "images/chest-closed.png";
-    } else if (claimed[i]) {
-      img.src = "images/chest-opened.png";
+function updateChests() {
+  gameState.chests.forEach((unlocked, i) => {
+    const chest = document.getElementById(`chest${i}`);
+    const img = chest.querySelector('img');
+    
+    if (unlocked) {
+      chest.classList.remove('locked');
+      chest.disabled = false;
+      img.src = 'images/chest-closed.png';
     } else {
-      img.src = "images/chest-closed.png";
+      chest.classList.add('locked');
+      chest.disabled = true;
     }
   });
-
-  if (available === 0) {
-    chestHint.textContent = "Take the quiz to unlock chests.";
-  } else {
-    const remaining = countRemainingChests();
-    chestHint.textContent =
-      remaining > 0
-        ? `You have ${remaining} chest(s) to claim. Click them for +1 coin each.`
-        : "All chests claimed. Do the quiz again to unlock more.";
-  }
+  
+  const anyUnlocked = gameState.chests.some(c => c);
+  const hint = document.getElementById('chestHint');
+  hint.textContent = anyUnlocked 
+    ? 'Click unlocked chests to collect coins!' 
+    : 'Take the quiz to unlock chests.';
 }
 
-
-  if (available === 0) {
-    chestHint.textContent = "Take the quiz to unlock chests.";
-  } else {
-    const remaining = countRemainingChests();
-    chestHint.textContent = remaining > 0
-      ? `You have ${remaining} chest(s) to claim. Click them for +1 coin each.`
-      : "All chests claimed. Do the quiz again to unlock more.";
-  }
-}
-
-function countRemainingChests() {
-  let remaining = 0;
-  for (let i = 0; i < 3; i++) {
-    if (i < gameState.chestsAvailable && !gameState.claimedChests[i]) remaining++;
-  }
-  return remaining;
-}
-
-function renderPlots() {
-  plotsGrid.innerHTML = "";
-
-  gameState.farmPlots.forEach((plantId, idx) => {
-    const btn = document.createElement("button");
-    btn.className = "plot";
-
-    if (!plantId) {
-      btn.innerHTML = `
-        <div class="emoji">🟫</div>
+function updatePlots() {
+  const grid = document.getElementById('plotsGrid');
+  grid.innerHTML = '';
+  
+  gameState.plots.forEach((plant, i) => {
+    const plot = document.createElement('button');
+    plot.className = 'plot';
+    
+    if (plant) {
+      plot.innerHTML = `
+        <div class="emoji">${plant.emoji}</div>
+        <div class="name">${plant.name}</div>
+        <div class="sub">Worth ${plant.value} 🪙</div>
+      `;
+      plot.onclick = () => harvestPlot(i);
+    } else {
+      plot.innerHTML = `
+        <div class="emoji">🌱</div>
         <div class="name">Empty Plot</div>
-        <div class="sub">Click to plant</div>
+        <div class="sub">Plant a seed</div>
       `;
-    } else {
-      const plant = PLANTS.find(p => p.id === plantId);
-      btn.innerHTML = `
-        <div class="emoji">${plant?.emoji ?? "🌱"}</div>
-        <div class="name">${plant?.name ?? "Plant"}</div>
-        <div class="sub">Plot ${idx + 1}</div>
-      `;
+      plot.onclick = () => plantSeed(i);
     }
-
-    btn.addEventListener("click", () => {
-      if (plantId) {
-        alert("This plot is already planted!");
-        return;
-      }
-      plantSeed(idx);
-    });
-
-    plotsGrid.appendChild(btn);
+    
+    grid.appendChild(plot);
   });
 }
 
-function renderInventory() {
-  invGrid.innerHTML = "";
-  for (const plant of PLANTS) {
-    const count = gameState.inventory[plant.id] ?? 0;
-    const row = document.createElement("div");
-    row.className = "invItem";
-    row.innerHTML = `<span>${plant.emoji} ${plant.name}</span><b>${count}</b>`;
-    invGrid.appendChild(row);
+function updateInventory() {
+  const grid = document.getElementById('invGrid');
+  grid.innerHTML = '';
+  
+  if (Object.keys(gameState.inventory).length === 0) {
+    grid.innerHTML = '<p style="grid-column: 1/-1; opacity: 0.7;">No plants harvested yet.</p>';
+    return;
   }
-}
-
-// =========================
-// Events / UI
-// =========================
-function wireEvents() {
-  btnQuiz.addEventListener("click", openQuiz);
-  closeQuiz.addEventListener("click", () => setModal(quizModal, false));
-
-  btnShop.addEventListener("click", () => setModal(shopModal, true));
-  closeShop.addEventListener("click", () => setModal(shopModal, false));
-  closeShopBottom.addEventListener("click", () => setModal(shopModal, false));
-
-  submitQuiz.addEventListener("click", submitQuizAnswers);
-
-  buySeedBtn.addEventListener("click", buySeed);
-
-  btnReset.addEventListener("click", () => {
-    if (!confirm("Reset all progress (coins, seeds, plants)?")) return;
-    gameState = defaultState();
-    saveState();
-    renderAll();
-  });
-
-  chestEls.forEach((el, i) => {
-    el.addEventListener("click", () => claimChest(i));
-  });
-
-  // close modals on backdrop click
-  [quizModal, shopModal].forEach(modal => {
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) setModal(modal, false);
-    });
+  
+  Object.entries(gameState.inventory).forEach(([name, count]) => {
+    const plant = PLANTS.find(p => p.name === name);
+    const item = document.createElement('div');
+    item.className = 'invItem';
+    item.innerHTML = `
+      <div>
+        <span style="font-size: 24px; margin-right: 8px;">${plant.emoji}</span>
+        <b>${name}</b>
+      </div>
+      <div>×${count}</div>
+    `;
+    grid.appendChild(item);
   });
 }
 
-function setModal(modalEl, open) {
-  modalEl.classList.toggle("hidden", !open);
+// ===== CHEST FUNCTIONS =====
+function openChest(index) {
+  if (!gameState.chests[index]) return;
+  
+  const chest = document.getElementById(`chest${index}`);
+  const img = chest.querySelector('img');
+  
+  // Animate
+  img.style.animation = 'chestOpen 0.5s ease';
+  
+  setTimeout(() => {
+    // Change to open image
+    img.src = 'images/chest-open.png';
+    
+    // Award coins
+    const reward = Math.floor(Math.random() * 5) + 3; // 3-7 coins
+    gameState.coins += reward;
+    
+    // Show coin pop
+    const coinPop = document.createElement('div');
+    coinPop.className = 'coinPop';
+    coinPop.textContent = `+${reward} 🪙`;
+    chest.appendChild(coinPop);
+    
+    setTimeout(() => coinPop.remove(), 800);
+    
+    // Lock chest again
+    gameState.chests[index] = false;
+    
+    updateUI();
+    saveGame();
+    img.style.animation = '';
+  }, 250);
 }
 
-// =========================
-// Quiz
-// =========================
+// ===== PLOT FUNCTIONS =====
+function plantSeed(index) {
+  if (gameState.seeds < 1) {
+    alert('You need seeds! Buy them from the shop.');
+    return;
+  }
+  
+  if (gameState.plots[index]) {
+    alert('This plot already has a plant!');
+    return;
+  }
+  
+  const randomPlant = PLANTS[Math.floor(Math.random() * PLANTS.length)];
+  gameState.plots[index] = randomPlant;
+  gameState.seeds--;
+  
+  updateUI();
+  saveGame();
+}
+
+function harvestPlot(index) {
+  const plant = gameState.plots[index];
+  if (!plant) return;
+  
+  gameState.coins += plant.value;
+  gameState.inventory[plant.name] = (gameState.inventory[plant.name] || 0) + 1;
+  gameState.plots[index] = null;
+  
+  updateUI();
+  saveGame();
+}
+
+// ===== QUIZ FUNCTIONS =====
 function openQuiz() {
-  // build quiz HTML
-  quizBody.innerHTML = "";
-  QUIZ.forEach((item, qIndex) => {
-    const card = document.createElement("div");
-    card.className = "qCard";
+  // Pick 3 random questions
+  const shuffled = [...QUESTIONS].sort(() => Math.random() - 0.5);
+  const selected = shuffled.slice(0, 3);
+  
+  const quizBody = document.getElementById('quizBody');
+  quizBody.innerHTML = '';
+  
+  selected.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'qCard';
     card.innerHTML = `
-      <div class="qTitle">Q${qIndex + 1}. ${item.q}</div>
-      ${item.choices.map((c, i) => `
+      <div class="qTitle">Question ${i + 1}: ${q.q}</div>
+      ${q.choices.map((choice, j) => `
         <label class="choice">
-          <input type="radio" name="q${qIndex}" value="${i}">
-          <span>${c}</span>
+          <input type="radio" name="q${i}" value="${j}">
+          <span>${choice}</span>
         </label>
-      `).join("")}
+      `).join('')}
     `;
     quizBody.appendChild(card);
   });
-
-  setModal(quizModal, true);
+  
+  // Store selected questions
+  quizBody.dataset.questions = JSON.stringify(selected);
+  
+  document.getElementById('quizModal').classList.remove('hidden');
 }
 
-function submitQuizAnswers() {
-  let correct = 0;
-
-  QUIZ.forEach((item, qIndex) => {
-    const picked = document.querySelector(`input[name="q${qIndex}"]:checked`);
-    if (!picked) return; // unanswered = wrong
-    const chosenIndex = Number(picked.value);
-    if (chosenIndex === item.answerIndex) correct++;
-  });
-
-  // 1 correct = 1 chest (max 3)
-  gameState.lastScore = correct;
-  gameState.chestsAvailable = correct;
-  gameState.claimedChests = [false, false, false];
-
-  saveState();
-  renderAll();
-
-  setModal(quizModal, false);
-
-  if (correct === 0) alert("Score: 0/3. No chests this time 😭");
-  else alert(`Score: ${correct}/3! You unlocked ${correct} chest(s).`);
+function closeQuiz() {
+  document.getElementById('quizModal').classList.add('hidden');
 }
 
-// =========================
-// Chests
-// =========================
-function claimChest(index) {
-  if (index >= gameState.chestsAvailable) return;
-  if (gameState.claimedChests[index]) return;
-
-  const chestEl = chestEls[index];
-  const img = chestEl.querySelector("img");
-
-  // update game state
-  gameState.claimedChests[index] = true;
-  gameState.coins += 1;
-
-  // chest pop animation
-  if (img) img.style.animation = "chestOpen 0.45s ease";
-
-  // coin pop
-  const coin = document.createElement("div");
-  coin.className = "coinPop";
-  coin.textContent = "🪙";
-  chestEl.appendChild(coin);
-
-  setTimeout(() => {
-    if (img) {
-      img.style.animation = "";
-      img.src = "images/chest-opened.png";
+function submitQuiz() {
+  const quizBody = document.getElementById('quizBody');
+  const questions = JSON.parse(quizBody.dataset.questions);
+  
+  let score = 0;
+  questions.forEach((q, i) => {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (selected && parseInt(selected.value) === q.correct) {
+      score++;
     }
-    coin.remove();
-    saveState();
-    renderAll();
-  }, 600);
+  });
+  
+  gameState.lastScore = score;
+  gameState.totalQuestions = questions.length;
+  
+  // Unlock chests based on score
+  for (let i = 0; i < score; i++) {
+    gameState.chests[i] = true;
+  }
+  
+  alert(`You scored ${score}/${questions.length}!\n${score} chest(s) unlocked!`);
+  
+  closeQuiz();
+  updateUI();
+  saveGame();
 }
 
-// =========================
-// Shop / Seeds / Planting
-// =========================
+// ===== SHOP FUNCTIONS =====
+function openShop() {
+  document.getElementById('shopModal').classList.remove('hidden');
+}
+
+function closeShop() {
+  document.getElementById('shopModal').classList.add('hidden');
+}
+
 function buySeed() {
   if (gameState.coins < 5) {
-    alert("Not enough coins. You need 5 coins for a seed.");
+    alert('Not enough coins! You need 5 coins to buy a seed.');
     return;
   }
+  
   gameState.coins -= 5;
-  gameState.seeds += 1;
-
-  saveState();
-  renderAll();
+  gameState.seeds++;
+  
+  updateUI();
+  saveGame();
 }
 
-function plantSeed(plotIndex) {
-  if (gameState.seeds <= 0) {
-    alert("No seeds! Go to the shop to buy more.");
-    return;
-  }
-  if (gameState.farmPlots[plotIndex] !== null) return;
-
-  gameState.seeds -= 1;
-
-  const plantId = rollPlant();
-  gameState.farmPlots[plotIndex] = plantId;
-  gameState.inventory[plantId] = (gameState.inventory[plantId] ?? 0) + 1;
-
-  saveState();
-  renderAll();
-
-  const plant = PLANTS.find(p => p.id === plantId);
-  alert(`Your seed grew into: ${plant?.name ?? "a plant"} ${plant?.emoji ?? ""}`);
+// ===== RESET FUNCTION =====
+function resetGame() {
+  if (!confirm('Are you sure you want to reset everything?')) return;
+  
+  gameState = {
+    coins: 0,
+    seeds: 1,
+    lastScore: 0,
+    totalQuestions: 3,
+    chests: [false, false, false],
+    plots: Array(8).fill(null),
+    inventory: {}
+  };
+  
+  updateUI();
+  saveGame();
 }
 
-function rollPlant() {
-  // weighted roll by pct
-  const total = PLANTS.reduce((sum, p) => sum + p.pct, 0);
-  let r = Math.random() * total;
-
-  for (const p of PLANTS) {
-    r -= p.pct;
-    if (r <= 0) return p.id;
-  }
-  return "carrot";
-}
+// ===== EVENT LISTENERS =====
+document.addEventListener('DOMContentLoaded', () => {
+  // Load saved game
+  loadGame();
+  updateUI();
+  
+  // Top bar buttons
+  document.getElementById('btnQuiz').addEventListener('click', openQuiz);
+  document.getElementById('btnShop').addEventListener('click', openShop);
+  document.getElementById('btnReset').addEventListener('click', resetGame);
+  
+  // Quiz modal
+  document.getElementById('closeQuiz').addEventListener('click', closeQuiz);
+  document.getElementById('submitQuiz').addEventListener('click', submitQuiz);
+  
+  // Shop modal
+  document.getElementById('closeShop').addEventListener('click', closeShop);
+  document.getElementById('closeShopBottom').addEventListener('click', closeShop);
+  document.getElementById('buySeedBtn').addEventListener('click', buySeed);
+  
+  // Chest buttons
+  document.getElementById('chest0').addEventListener('click', () => openChest(0));
+  document.getElementById('chest1').addEventListener('click', () => openChest(1));
+  document.getElementById('chest2').addEventListener('click', () => openChest(2));
+  
+  // Close modals when clicking backdrop
+  document.getElementById('quizModal').addEventListener('click', (e) => {
+    if (e.target.id === 'quizModal') closeQuiz();
+  });
+  
+  document.getElementById('shopModal').addEventListener('click', (e) => {
+    if (e.target.id === 'shopModal') closeShop();
+  });
+});
