@@ -140,15 +140,14 @@ function renderChests() {
     if (i >= available) {
       el.classList.add("locked");
       img.src = "images/chest-closed.png";
-    } 
-    else if (claimed[i]) {
-      img.src = "images/chest-opened.png"; // 👈 exact filename
-    } 
-    else {
+    } else if (claimed[i]) {
+      img.src = "images/chest-opened.png"; // match your filename
+    } else {
       img.src = "images/chest-closed.png";
     }
   });
 }
+
 
 
   chestEls.forEach((el, i) => {
