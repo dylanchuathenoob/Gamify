@@ -119,22 +119,20 @@ h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
   padding: 0;
   border: none;
   background: transparent;
-  border-radius: 14px;
   cursor: pointer;
-
-  position: relative; /* needed for coinPop positioning */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  font-size: 0;      /* prevents weird tiny icon text */
+  line-height: 0;
 }
 
-.chest img{
+.chest > img{
   width: 100%;
   height: 100%;
-  object-fit: contain;
   display: block;
-  pointer-events: none; /* IMPORTANT: clicks go to the button */
+  object-fit: contain;
+  pointer-events: none;
 }
+
 
 .chest.locked{
   opacity: 0.4;
