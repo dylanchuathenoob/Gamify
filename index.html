@@ -2,112 +2,102 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Practice-La Pets</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Practice-La Farm</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
+  <header class="topbar">
+    <div class="brand">🌾 Practice-La Farm</div>
 
-    <!-- HEADER -->
-    <header class="top-bar">
-      <h1>Practice-La Pets</h1>
-      <div class="coins-display">
-        🪙 Coins: <span id="coinsDisplay">0</span>
+    <div class="hud">
+      <div class="pill">🪙 Coins: <span id="coinsText">0</span></div>
+      <div class="pill">🌰 Seeds: <span id="seedsText">1</span></div>
+      <div class="pill">✅ Last Score: <span id="scoreText">0/3</span></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="btnQuiz">Take 3 Questions</button>
+      <button class="btn" id="btnShop">Shop</button>
+      <button class="btn btnGhost" id="btnReset">Reset</button>
+    </div>
+  </header>
+
+  <main class="farm">
+    <div class="farmOverlay">
+      <div class="titleBlock">
+        <h1>Farm Field</h1>
+        <p>Answer questions to spawn chests. Click chests to collect coins. Buy seeds and plant them.</p>
       </div>
-    </header>
-    
-<!-- SCREEN: CHARACTER SELECT -->
-<section id="screenSelect" class="screen active">
-  <h2>Choose your companion</h2>
-  <p class="subtitle">
-    You can only have one pet for now, but you can change later.
-  </p>
 
-  <div class="pet-grid">
-
-    <!-- Dog -->
-    <div class="pet-card" onclick="selectPet('dog')">
-      <div class="pet-emoji">🐶</div>
-      <div class="pet-name">Dog</div>
-      <div class="pet-desc">Energetic and loyal</div>
-    </div>
-
-    <!-- Cat -->
-    <div class="pet-card" onclick="selectPet('cat')">
-      <div class="pet-emoji">🐱</div>
-      <div class="pet-name">Cat</div>
-      <div class="pet-desc">Calm and clever</div>
-    </div>
-
-    <!-- Turtle -->
-    <div class="pet-card" onclick="selectPet('turtle')">
-      <div class="pet-emoji">🐢</div>
-      <div class="pet-name">Turtle</div>
-      <div class="pet-desc">Slow and steady</div>
-    </div>
-
-    <!-- Bunny -->
-    <div class="pet-card" onclick="selectPet('bunny')">
-      <div class="pet-emoji">🐰</div>
-      <div class="pet-name">Bunny</div>
-      <div class="pet-desc">Fast learner</div>
-    </div>
-
-    <!-- Fox -->
-    <div class="pet-card" onclick="selectPet('fox')">
-      <div class="pet-emoji">🦊</div>
-      <div class="pet-name">Fox</div>
-      <div class="pet-desc">Clever and playful</div>
-    </div>
-
-  </div> <!-- end pet-grid -->
-
-  <button class="primary-btn" onclick="goToMain()">Continue</button>
-</section>
-
-    <!-- SCREEN: MAIN PET ROOM -->
-    <section id="screenMain" class="screen">
-      <h2>Your Room</h2>
-
-      <div class="room">
-        <div class="pet-area">
-          <div id="petEmoji" class="pet-emoji">❓</div>
-          <div class="pet-label">
-            <span id="petTypeLabel">No pet selected</span>
-          </div>
-          <div class="pet-items">
-            <span id="equippedHat" class="item-tag"></span>
-            <span id="equippedBed" class="item-tag"></span>
-          </div>
+      <section class="chestsArea">
+        <h2>Treasure Chests</h2>
+        <div class="chestsRow">
+          <button class="chest" id="chest0" aria-label="Chest 1">🧰</button>
+          <button class="chest" id="chest1" aria-label="Chest 2">🧰</button>
+          <button class="chest" id="chest2" aria-label="Chest 3">🧰</button>
         </div>
+        <div class="chestHint" id="chestHint">Take the quiz to unlock chests.</div>
+      </section>
 
-        <div class="actions">
-          <button onclick="earnCoins()" class="secondary-btn">
-            Practice (temporary: +10 coins)
-          </button>
-          <button onclick="openShop()" class="primary-btn">
-            Open Shop
-          </button>
-          <button onclick="backToSelect()" class="ghost-btn">
-            Change Pet
-          </button>
-        </div>
+      <section class="plotsArea">
+        <h2>Plots</h2>
+        <div class="plotsGrid" id="plotsGrid"></div>
+        <div class="plotHint">Click an empty plot to plant a seed.</div>
+      </section>
+    </div>
+  </main>
+
+  <!-- QUIZ MODAL -->
+  <div class="modalBackdrop hidden" id="quizModal">
+    <div class="modal">
+      <div class="modalHeader">
+        <h2>3 Questions</h2>
+        <button class="iconBtn" id="closeQuiz" aria-label="Close">✕</button>
       </div>
 
-      <div class="inventory">
-        <h3>Your Items</h3>
-        <ul id="inventoryList"></ul>
+      <div id="quizBody" class="modalBody">
+        <!-- injected by JS -->
       </div>
-    </section>
 
-    <!-- SCREEN: SHOP -->
-    <section id="screenShop" class="screen">
-      <h2>Shop</h2>
-      <p class="subtitle">Spend your coins on items for your pet and room.</p>
-
-      <div class="shop-grid" id="shopItems"></div>
-
-      <button class="secondary-btn" onclick="closeShop()">Back to Room</button>
-    </section>
-
+      <div class="modalFooter">
+        <button class="btn" id="submitQuiz">Submit</button>
+      </div>
+    </div>
   </div>
+
+  <!-- SHOP MODAL -->
+  <div class="modalBackdrop hidden" id="shopModal">
+    <div class="modal">
+      <div class="modalHeader">
+        <h2>Shop</h2>
+        <button class="iconBtn" id="closeShop" aria-label="Close">✕</button>
+      </div>
+
+      <div class="modalBody">
+        <div class="shopCard">
+          <div class="shopInfo">
+            <div class="shopTitle">Seed</div>
+            <div class="shopDesc">Plant it on the farm to grow a random plant.</div>
+          </div>
+          <div class="shopBuy">
+            <div class="price">Cost: <b>5</b> 🪙</div>
+            <button class="btn" id="buySeedBtn">Buy Seed</button>
+          </div>
+        </div>
+
+        <div class="inventory">
+          <h3>Your Plants</h3>
+          <div class="invGrid" id="invGrid"></div>
+        </div>
+      </div>
+
+      <div class="modalFooter">
+        <button class="btn btnGhost" id="closeShopBottom">Back to Farm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
