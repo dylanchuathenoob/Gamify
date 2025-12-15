@@ -8,16 +8,20 @@ body {
 .topbar{
   position: sticky;
   top: 0;
-  z-index: 5;
+
+  z-index: 200;          /* 👈 IMPORTANT: higher than modalBackdrop (50) */
+
   display: grid;
   grid-template-columns: 1fr auto auto;
   gap: 12px;
   align-items: center;
+
   padding: 14px 16px;
   background: rgba(17,24,39,0.92);
   border-bottom: 1px solid rgba(255,255,255,0.08);
   backdrop-filter: blur(8px);
 }
+
 
 .brand { font-weight: 800; letter-spacing: 0.2px; color: #f9fafb; }
 
@@ -214,6 +218,13 @@ h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
   z-index: 50;
 }
 .hidden{ display:none; }
+.modalBackdrop.hidden{
+  display: none !important;
+  pointer-events: none !important;
+}
+.modalBackdrop{
+  pointer-events: auto;
+}
 
 .modal{
   width: min(720px, 100%);
