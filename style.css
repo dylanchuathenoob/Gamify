@@ -211,13 +211,14 @@ h2 {
 /* ===== PLOTS AREA ===== */
 .plotsGrid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
+  min-height: 120px; /* Force grid to have height */
 }
 
 @media (max-width: 720px) {
   .plotsGrid { 
-    grid-template-columns: repeat(2, minmax(120px, 1fr)); 
+    grid-template-columns: repeat(2, 1fr); 
   }
 }
 
@@ -225,8 +226,8 @@ h2 {
   min-height: 110px;
   padding: 10px;
   border-radius: 16px;
-  border: 1px dashed rgba(255,255,255,0.35);
-  background: rgba(17,24,39,0.40);
+  border: 2px dashed rgba(255,255,255,0.45);
+  background: rgba(17,24,39,0.60);
   color: #f9fafb;
   display: flex;
   flex-direction: column;
@@ -234,14 +235,29 @@ h2 {
   align-items: center;
   gap: 6px;
   cursor: pointer;
-  transition: transform 0.08s ease, opacity 0.08s ease;
+  transition: transform 0.08s ease, opacity 0.08s ease, background 0.2s ease;
 }
 
-.plot:hover { opacity: 0.96; }
+.plot:hover { 
+  opacity: 0.96;
+  background: rgba(17,24,39,0.75);
+  border-color: rgba(255,255,255,0.6);
+}
+
 .plot:active { transform: translateY(1px); }
-.plot .emoji { font-size: 34px; }
-.plot .name { font-weight: 800; }
-.plot .sub { font-size: 12px; opacity: 0.8; }
+.plot .emoji { 
+  font-size: 34px; 
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.plot .name { 
+  font-weight: 800;
+  font-size: 14px;
+}
+.plot .sub { 
+  font-size: 12px; 
+  opacity: 0.8; 
+}
 
 /* ===== MODALS ===== */
 .modalBackdrop {
