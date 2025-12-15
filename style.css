@@ -441,3 +441,8 @@ chest{
 .modal.hidden, #quizModal.hidden, #shopModal.hidden{
   pointer-events: none !important;
 }
+
+#quizModal, #shopModal{
+  outline: 4px solid red;
+}
+
