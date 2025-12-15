@@ -132,14 +132,22 @@ function renderChests() {
   const claimed = gameState.claimedChests;
 
   chestEls.forEach((el, i) => {
-    el.classList.remove("locked", "claimed");
+  el.classList.remove("locked", "claimed");
 
-    if (i >= available) {
-      el.classList.add("locked");
-    } else if (claimed[i]) {
-      el.classList.add("claimed");
-    }
-  });
+  if (i >= available) {
+    // locked chest
+    el.classList.add("locked");
+    el.textContent = "🔒";
+  } else if (claimed[i]) {
+    // opened chest
+    el.classList.add("claimed");
+    el.textContent = "🪙"; // or "✅" or "🎁"
+  } else {
+    // available but not opened
+    el.textContent = "🧰";
+  }
+});
+
 
   if (available === 0) {
     chestHint.textContent = "Take the quiz to unlock chests.";
