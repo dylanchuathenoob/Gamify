@@ -132,6 +132,26 @@ function renderChests() {
   const claimed = gameState.claimedChests;
 
   chestEls.forEach((el, i) => {
+    const img = el.querySelector("img");
+    if (!img) return;
+
+    el.classList.remove("locked");
+
+    if (i >= available) {
+      el.classList.add("locked");
+      img.src = "images/chest-closed.png";
+    } 
+    else if (claimed[i]) {
+      img.src = "images/chest-opened.png"; // 👈 exact filename
+    } 
+    else {
+      img.src = "images/chest-closed.png";
+    }
+  });
+}
+
+
+  chestEls.forEach((el, i) => {
   el.classList.remove("locked", "claimed");
 
   if (i >= available) {
@@ -306,28 +326,46 @@ function claimChest(index) {
   if (gameState.claimedChests[index]) return;
 
   const chestEl = chestEls[index];
+  const img = chestEl.querySelector("img");
 
-  // --- Step 3: chest open animation ---
-  chestEl.style.animation = "chestOpen 0.45s ease";
+  // update game state
+  gameState.claimedChests[index] = true;
+  gameState.coins += 1;
 
-  // --- Step 4: coin pop animation ---
+  // chest pop animation
+  if (img) img.style.animation = "chestOpen 0.45s ease";
+
+  // coin pop
   const coin = document.createElement("div");
   coin.className = "coinPop";
   coin.textContent = "🪙";
   chestEl.appendChild(coin);
 
-  // update state
-  gameState.claimedChests[index] = true;
-  gameState.coins += 1;
-
-  // cleanup + refresh UI
   setTimeout(() => {
-    chestEl.style.animation = "";
+    if (img) {
+      img.style.animation = "";
+      img.src = "images/chest-opened.png";
+    }
     coin.remove();
     saveState();
     renderAll();
-  }, 800);
+  }, 600);
 }
+
+.chest{
+  width: 84px;
+  height: 84px;
+  position: relative;
+}
+
+.chest img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+@keyframes chestOpen { ... }
+@keyframes coinPop { ... }
+
 
 // =========================
 // Shop / Seeds / Planting
