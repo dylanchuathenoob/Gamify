@@ -305,13 +305,29 @@ function claimChest(index) {
   if (index >= gameState.chestsAvailable) return;
   if (gameState.claimedChests[index]) return;
 
+  const chestEl = chestEls[index];
+
+  // --- Step 3: chest open animation ---
+  chestEl.style.animation = "chestOpen 0.45s ease";
+
+  // --- Step 4: coin pop animation ---
+  const coin = document.createElement("div");
+  coin.className = "coinPop";
+  coin.textContent = "🪙";
+  chestEl.appendChild(coin);
+
+  // update state
   gameState.claimedChests[index] = true;
   gameState.coins += 1;
 
-  saveState();
-  renderAll(); // 🔥 force full UI refresh
+  // cleanup + refresh UI
+  setTimeout(() => {
+    chestEl.style.animation = "";
+    coin.remove();
+    saveState();
+    renderAll();
+  }, 800);
 }
-
 
 // =========================
 // Shop / Seeds / Planting
