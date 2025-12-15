@@ -68,14 +68,26 @@ body {
   image-rendering: crisp-edges;
 }
 
+.farm::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);  /* 👈 simple + effective */
+  z-index: 0;
+}
+
 .farmOverlay{
   max-width: 980px;
   margin: 0 auto;
   padding: 18px;
   border-radius: 20px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+
+  background: rgba(255,255,255,0.22); /* 👈 clearer */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.45);
 }
 
 .titleBlock h1 { color: #f9fafb; font-size: 28px; }
