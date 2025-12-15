@@ -344,3 +344,31 @@ h2 { color: #f9fafb; font-size: 18px; margin-bottom: 10px; }
   animation: coinPop 0.8s ease forwards;
   pointer-events: none;
 }
+
+/* Allow clicks through the dark farm overlay */
+.farm::before{
+  pointer-events: none;
+}
+
+/* Make sure the top bar is always above everything */
+.top-bar{
+  position: relative;
+  z-index: 9999;
+}
+
+/* Bring plots back */
+.plotsGrid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.plot{
+  min-height: 110px;             /* 👈 forces them to exist */
+  border-radius: 14px;
+  border: 1px dashed rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.25);   /* 👈 visible on glass panel */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
