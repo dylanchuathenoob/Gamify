@@ -72,9 +72,11 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.45);  /* 👈 simple + effective */
+  background: rgba(0,0,0,0.45);
   z-index: 0;
+  pointer-events: none; /* 👈 THIS LINE FIXES CHESTS */
 }
+
 
 .farmOverlay{
   max-width: 980px;
