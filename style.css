@@ -420,3 +420,24 @@ chest{
   animation: coinPop 0.8s ease forwards;
   pointer-events: none;
 }
+
+/* 1) Never let the farm dark overlay block clicks */
+.farm::before{
+  pointer-events: none !important;
+}
+
+/* 2) Make sure the top bar buttons are always on top */
+.top-bar, .top-nav{
+  position: relative;
+  z-index: 9999;
+}
+
+/* 3) When modals are hidden, they must NOT block clicks */
+.hidden{
+  display: none !important;
+}
+
+/* If your modals use opacity instead of display, also force this */
+.modal.hidden, #quizModal.hidden, #shopModal.hidden{
+  pointer-events: none !important;
+}
