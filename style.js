@@ -162,7 +162,7 @@ function openChest(index) {
   
   setTimeout(() => {
     // Change to open image
-    img.src = 'images/chest-open.png';
+    img.src = 'images/chest-opened.png';
     
     // Award coins
     const reward = Math.floor(Math.random() * 5) + 3; // 3-7 coins
