@@ -442,7 +442,4 @@ chest{
   pointer-events: none !important;
 }
 
-#quizModal, #shopModal{
-  outline: 4px solid red;
-}
 
