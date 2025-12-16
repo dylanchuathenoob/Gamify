@@ -154,16 +154,20 @@ function updatePlots() {
         <div class="sub">Sprouting soon…</div>
       `;
       plot.onclick = () => alert('The seed is growing 🌰');
+      grid.appendChild(plot);  // ← ADD THIS LINE
+      return;                   // ← ADD THIS LINE
     }
 
     // 🌱 SPROUT STAGE (12–24h)
     else if (stage === 1) {
       plot.innerHTML = `
-        <img src="images/seed-sprouts.png" class="plotImg" alt="Sprout">
+        <img src="images/seeds-sprout.png" class="plotImg" alt="Sprout">
         <div class="name">Sprout</div>
         <div class="sub">Almost ready…</div>
       `;
       plot.onclick = () => alert('The sprout is growing 🌱');
+      grid.appendChild(plot);  // ← ADD THIS LINE
+      return;                   // ← ADD THIS LINE
     }
 
     // 🍅 READY STAGE (24h+)
@@ -179,7 +183,6 @@ function updatePlots() {
     grid.appendChild(plot);
   });
 }
-
 
 function updateInventory() {
   const grid = document.getElementById('invGrid');
