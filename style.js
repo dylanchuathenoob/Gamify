@@ -9,7 +9,7 @@ let gameState = {
   inventory: {} // {plantName: count}
 };
 
-const HOUR = 60 * 1000;
+const HOUR = 10 * 1000;
 const STAGE_SPROUT = 1 * HOUR;
 const STAGE_READY  = 2 * HOUR;
 
