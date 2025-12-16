@@ -131,6 +131,7 @@ function updatePlots() {
     const plot = document.createElement('button');
     plot.className = 'plot';
 
+    // EMPTY
     if (!plotObj) {
       plot.innerHTML = `
         <div class="emoji">🟫</div>
@@ -145,24 +146,28 @@ function updatePlots() {
     const stage = getStage(plotObj);
     const plant = PLANTS.find(p => p.name === plotObj.plantName);
 
+    // 🌰 SEED STAGE (0–12h)
     if (stage === 0) {
-      const left = msToNextStage(plotObj);
       plot.innerHTML = `
-        <div class="emoji">🌰</div>
+        <img src="images/seeds.png" class="plotImg" alt="Seed">
         <div class="name">Seed</div>
-        <div class="sub">Sprout in ${fmtTime(left)}</div>
+        <div class="sub">Sprouting soon…</div>
       `;
-      plot.onclick = () => alert('Seed is growing...');
-    } else if (stage === 1) {
-      const left = msToNextStage(plotObj);
+      plot.onclick = () => alert('The seed is growing 🌰');
+    }
+
+    // 🌱 SPROUT STAGE (12–24h)
+    else if (stage === 1) {
       plot.innerHTML = `
-        <div class="emoji">🌱</div>
+        <img src="images/seed-sprouts.png" class="plotImg" alt="Sprout">
         <div class="name">Sprout</div>
-        <div class="sub">Ready in ${fmtTime(left)}</div>
+        <div class="sub">Almost ready…</div>
       `;
-      plot.onclick = () => alert('Almost there...');
-    } else {
-      // stage 2 (ready)
+      plot.onclick = () => alert('The sprout is growing 🌱');
+    }
+
+    // 🍅 READY STAGE (24h+)
+    else {
       plot.innerHTML = `
         <div class="emoji">${plant.emoji}</div>
         <div class="name">${plant.name}</div>
@@ -174,6 +179,7 @@ function updatePlots() {
     grid.appendChild(plot);
   });
 }
+
 
 function updateInventory() {
   const grid = document.getElementById('invGrid');
