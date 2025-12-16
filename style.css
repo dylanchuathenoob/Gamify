@@ -393,8 +393,8 @@ h2 {
 }
 
 .plotImg {
-  width: 140px;
-  height: 140px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
   image-rendering: pixelated; /* optional, nice for game feel */
 }
