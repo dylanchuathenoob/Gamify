@@ -9,6 +9,31 @@ let gameState = {
   inventory: {} // {plantName: count}
 };
 
+const HOUR = 60 * 60 * 1000;
+const STAGE_SPROUT = 12 * HOUR;
+const STAGE_READY  = 24 * HOUR;
+
+function getStage(plotObj) {
+  const age = Date.now() - plotObj.plantedAt;
+  if (age >= STAGE_READY) return 2;      // fruit ready
+  if (age >= STAGE_SPROUT) return 1;     // sprout
+  return 0;                               // seed
+}
+
+function msToNextStage(plotObj) {
+  const age = Date.now() - plotObj.plantedAt;
+  if (age < STAGE_SPROUT) return STAGE_SPROUT - age;
+  if (age < STAGE_READY)  return STAGE_READY - age;
+  return 0;
+}
+
+function fmtTime(ms) {
+  const totalMins = Math.max(0, Math.ceil(ms / 60000));
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
+
 // ===== PLANT TYPES =====
 const PLANTS = [
   { name: "Tomato", emoji: "🍅", value: 3 },
@@ -101,27 +126,51 @@ function updateChests() {
 function updatePlots() {
   const grid = document.getElementById('plotsGrid');
   grid.innerHTML = '';
-  
-  gameState.plots.forEach((plant, i) => {
+
+  gameState.plots.forEach((plotObj, i) => {
     const plot = document.createElement('button');
     plot.className = 'plot';
-    
-    if (plant) {
+
+    if (!plotObj) {
+      plot.innerHTML = `
+        <div class="emoji">🟫</div>
+        <div class="name">Empty Plot</div>
+        <div class="sub">Click to plant</div>
+      `;
+      plot.onclick = () => plantSeed(i);
+      grid.appendChild(plot);
+      return;
+    }
+
+    const stage = getStage(plotObj);
+    const plant = PLANTS.find(p => p.name === plotObj.plantName);
+
+    if (stage === 0) {
+      const left = msToNextStage(plotObj);
+      plot.innerHTML = `
+        <div class="emoji">🌰</div>
+        <div class="name">Seed</div>
+        <div class="sub">Sprout in ${fmtTime(left)}</div>
+      `;
+      plot.onclick = () => alert('Seed is growing...');
+    } else if (stage === 1) {
+      const left = msToNextStage(plotObj);
+      plot.innerHTML = `
+        <div class="emoji">🌱</div>
+        <div class="name">Sprout</div>
+        <div class="sub">Ready in ${fmtTime(left)}</div>
+      `;
+      plot.onclick = () => alert('Almost there...');
+    } else {
+      // stage 2 (ready)
       plot.innerHTML = `
         <div class="emoji">${plant.emoji}</div>
         <div class="name">${plant.name}</div>
-        <div class="sub">Worth ${plant.value} 🪙</div>
+        <div class="sub">Ready! +${plant.value} 🪙</div>
       `;
       plot.onclick = () => harvestPlot(i);
-    } else {
-      plot.innerHTML = `
-        <div class="emoji">🌱</div>
-        <div class="name">Empty Plot</div>
-        <div class="sub">Plant a seed</div>
-      `;
-      plot.onclick = () => plantSeed(i);
     }
-    
+
     grid.appendChild(plot);
   });
 }
@@ -191,28 +240,38 @@ function plantSeed(index) {
     alert('You need seeds! Buy them from the shop.');
     return;
   }
-  
   if (gameState.plots[index]) {
-    alert('This plot already has a plant!');
+    alert('This plot is not empty!');
     return;
   }
-  
+
   const randomPlant = PLANTS[Math.floor(Math.random() * PLANTS.length)];
-  gameState.plots[index] = randomPlant;
+
+  gameState.plots[index] = {
+    plantName: randomPlant.name,
+    plantedAt: Date.now()
+  };
+
   gameState.seeds--;
-  
   updateUI();
   saveGame();
 }
 
 function harvestPlot(index) {
-  const plant = gameState.plots[index];
-  if (!plant) return;
-  
+  const plotObj = gameState.plots[index];
+  if (!plotObj) return;
+
+  const stage = getStage(plotObj);
+  if (stage !== 2) {
+    alert('Not ready yet! Let it grow a bit more.');
+    return;
+  }
+
+  const plant = PLANTS.find(p => p.name === plotObj.plantName);
   gameState.coins += plant.value;
   gameState.inventory[plant.name] = (gameState.inventory[plant.name] || 0) + 1;
   gameState.plots[index] = null;
-  
+
   updateUI();
   saveGame();
 }
@@ -323,6 +382,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Load saved game
   loadGame();
   updateUI();
+
+  setInterval(() => {
+  updatePlots(); // just plots is enough
+}, 60 * 1000);   // every 1 minute
   
   // Top bar buttons
   document.getElementById('btnQuiz').addEventListener('click', openQuiz);
