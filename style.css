@@ -391,3 +391,10 @@ h2 {
   display: flex;
   justify-content: space-between;
 }
+
+.plotImg {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  image-rendering: pixelated; /* optional, nice for game feel */
+}
