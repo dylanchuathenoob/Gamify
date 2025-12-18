@@ -9,9 +9,10 @@ let gameState = {
   inventory: {} // {plantName: count}
 };
 
-const HOUR = 10 * 1000;
-const STAGE_SPROUT = 1 * HOUR;
-const STAGE_READY  = 2 * HOUR;
+const MIN = 10 * 1000
+const HOUR = 60 * MIN;
+const STAGE_SPROUT = 12 * HOUR;
+const STAGE_READY  = 24 * HOUR;
 
 function getStage(plotObj) {
   const age = Date.now() - plotObj.plantedAt;
